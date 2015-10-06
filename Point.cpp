@@ -1,155 +1,206 @@
-// Narayan Ramjali
+//
+// Created by Narayan Ramjali on 9/29/15.
+//
 
 #include "Point.h"
-#include "Cluster.h"
-#include <vector>
-#include <iostream>
-using namespace std;
+#include <cmath>
 
-class Point{
-public:
-   double[] co_ord;
-   int dim;
+    Clustering::Point::Point(int dimentions) {
+        if (dimentions == 0)
+            dimentions = 2;
+        dim = dimentions;
+        values = new double(dim);
+    }
 
- 
-    Point(int dim,double [] arr){
-        co_ord = new[dim];
-        for(int i = 0; i < dim; i++)
-            co_ord[i] = arr[i];
- 
-
-    double distTo(Clustering::Point* nPoint){
-        int dim = min(nPoint->dim, dim);
-        double dist = 0.0;
+    Clustering::Point::Point(int dim, double *vals) : Point(dim) {
         for (int i = 0; i < dim; i++)
-            dist += pow(nPoint->co_ord[i] - co_ord[i],2);
-        
-        int rem = abs(nPoint->dim-dim);
-        if (nPoint->dim > dim){
-            for (int i = dim; i < dim+rem; i++)
-                dist += pow(nPoint->co_ord[dim],2);
-        }
-        else{
-            for (int i = dim; i < dim+rem; i++)
-                dist += pow(co_ord[dim],2);
-        }
-        return dis;
-    }
-    
-    Clustering::Point* addition(Clustering::Point* nPoint){
-        nPoint* p;
-        int dim = max(nPoint->dim,dim);
-        double[] temp_arr = new double[dim];
-        
-        for (int i = 0; i < dim; i++){
-            if (i < nPoint->dim)
-                temp_arr[i] += nPoint->co_ord[i];
-            if (i < dim);
-            temp_arr[i] += co_ord[i];
-        }
-        p = new Clustering::Point(dim,temp_arr);
-        return p;
+            values[i] = vals[i];
     }
 
 
-    Clustering::Point* subtraction(Clustering::Point* nPoint){
-        nPoint* p;
-        int dim = max(nPoint->dim,dim);
-        double[] temp_arr = new double[dim];
-        
-        for (int i = 0; i < dim; i++){
-            if (i < nPoint->dim)
-                temp_arr[i] -= nPoint->co_ord[i];
-            if (i < dim);
-            temp_arr[i] += co_ord[i];
-        }
-        p = new Point(dim,temp_arr);
-        return p;
+    Clustering::Point::Point(const Clustering::Point &rhs) {
+        dim = rhs.dim;
+        values = new double[dim];
+        for (int i = 0; i < dim; i++)
+            values[i] = rhs.values[i];
+
     }
-    
-    Point* multiplication(int fac){
-        Point* p;
-        double[] temp_arr = new double[dim];
-        for (int i = 0; i < dim; i++){
-            temp_arr[i] = co_ord[i]*fac;
+
+    Clustering::Point &Clustering::Point::operator=(const Clustering::Point &rhs) {
+        if (this == &rhs) {
+            return *this;
+        } else {
+            delete[] values;
+
+            dim = rhs.dim;
+            values = new double[dim];
+            for (int i = 0; i < dim; i++)
+                values[i] = rhs.values[i];
         }
-        p = new Point(dim,temp_arr);
-        return p;
+        return *this;
     }
-    
-    Point* division(int fac){
-        Point* p;
-        double[] temp_arr = new double[dim];
-        for (int i = 0; i < dim; i++){
-            temp_arr[i] = co_ord[i]/fac;
-        }
-        p = new Point(dim,temp_arr);
-        return p;
+
+    Clustering::Point::~Point() {
+        delete[] values;
+
     }
-    
-    bool operator==(Point* nPoint){
-        if (dim == nPoint->dim){
-            for (int i = 0; i < dim; i++){
-                if (co_ord[i] != nPoint->co_ord[i])
-                    return false;
+
+    //??????
+    void Clustering::Point::setValue(int dimension, double d) {
+        if (dimension >= 1 && dimension <= dim)
+            values[dimension - 1] = d;
+
+    }
+
+    double Clustering::Point::getValue(int dimension) const {
+        if (dimension >= 1 && dimension <= dim)
+            return values[dimension - 1];
+        return 0;
+    }
+
+    double Clustering::Point::distanceTo(const Clustering::Point &other) const {
+        if (other.dim == dim) {
+            double sum = 0;
+            for (int i = 0; i < dim; i++) {
+                double diff = values[i] - other.values[i];
+                sum += diff * diff;
             }
-            return true;
+            return sqrt(sum);
         }
-        return false;
+        return 0;
     }
-    
-    bool operator!=(Point* nPoint){
-        if (dim == nPoint->dim){
-            for (int i = 0; i < dim; i++){
-                if (co_ord[i] == nPoint->co_ord[i])
-                    return false;
+
+    Clustering::Point &Clustering::Point::operator*=(double d) {
+        for (int i = 0; i < dim; i++)
+            values[i] *= d;
+        return *this;
+    }
+
+    Clustering::Point &Clustering::Point::operator/=(double d) {
+        for (int i = 0; i < dim; i++)
+            values[i] /= d;
+        return *this;
+
+    }
+
+    // ?????
+    const Clustering::Point Clustering::Point::operator*(double d) const {
+
+        for (int i = 0; i < dim; i++)
+            values[i] * d;
+        return *this;
+    }
+
+    //??????
+    const Clustering::Point Clustering::Point::operator/(double d) const {
+        for (int i = 0; i < dim; i++)
+            values[i] / d;
+        return *this;
+    }
+
+    // p1 += p1 is allowed , but different dimentions throws an exceptions
+    Clustering::Point &Clustering::operator+=(Clustering::Point &lhs, const Clustering::Point &rhs) {
+        if (&lhs == &rhs) {
+            return lhs *= 2;
+        } else if (lhs.dim == rhs.dim) {
+            for (int i = 0; i < lhs.dim; i++)
+                lhs.values[i] += rhs.values[i];
+        }
+        return lhs;
+    }
+
+    Clustering::Point &Clustering::operator-=(Clustering::Point &lhs, const Clustering::Point &rhs) {
+        if (&lhs == &rhs) {
+            return lhs *= 2;
+        } else if (lhs.dim == rhs.dim) {
+            for (int i = 0; i < lhs.dim; i++)
+                lhs.values[i] -= rhs.values[i];
+        }
+        return lhs;
+    }
+
+    const Clustering::Point Clustering::operator+(const Clustering::Point &lhs, const Clustering::Point &rhs) {
+        Point p(lhs);
+        return p += rhs;
+
+    }
+
+    const Clustering::Point Clustering::operator-(const Clustering::Point &lhs, const Clustering::Point &rhs) {
+        Point p(lhs);
+        return p -= rhs;
+    }
+
+    bool Clustering::operator==(const Clustering::Point &one, const Clustering::Point &another) {
+        if (one.dim != another.dim)
+            return false;
+        bool isEqual = true;
+        for (int i = 0; i < one.dim; i++) {
+            if (one.values[i] != another.values[i]) {
+                break;
             }
-            return true;
         }
-        return true;
+        return isEqual;
     }
-    
-    bool operator<(Point* nPoint){
-        if (dim == nPoint->dim){
-            for (int i = 0; i < dim; i++){
-                if (co_ord[i] >= nPoint->co_ord[i])
-                    return false;
+
+    bool Clustering::operator!=(const Clustering::Point &one, const Clustering::Point &another) {
+        return !(one == another);
+    }
+
+    bool Clustering::operator<(const Clustering::Point &one, const Clustering::Point &another) {
+        bool isLess = true;
+        for (int i = 0; i < one.dim; i++) {
+            if (one.values[i] >= another.values[i]) {
+                isLess = false;
+                break;
             }
-            return true;
         }
-        return false;
+        return isLess;
     }
-    
-    bool operator<(Point* nPoint){
-        if (dim == nPoint->dim){
-            for (int i = 0; i < dim; i++){
-                if (co_ord[i] <= nPoint->co_ord[i])
-                    return false;
+
+    bool Clustering::operator>(const Clustering::Point &one, const Clustering::Point &another) {
+        bool isMore = true;
+        for (int i = 0; i < one.dim; i++) {
+            if (one.values[i] <= another.values[i]) {
+                isMore = false;
+                break;
             }
-            return true;
         }
-        return false;
+        return isMore;
     }
-    
-    bool operator<=(Point* nPoint){
-        if (dim == nPoint->dim){
-            for (int i = 0; i < dim; i++){
-                if (co_ord[i] > nPoint->co_ord[i])
-                    return false;
+
+    //????????? still working
+    bool Clustering::operator<=(const Clustering::Point &one, const Clustering::Point &another) {
+        bool isLess = true;
+        for (int i = 0; i < one.dim; i++) {
+            if (one.values[i] > another.values[i]) {
+                isLess = false;
+                break;
             }
-            return true;
         }
-        return false;
+        return isLess;
     }
-    
-    bool operator<(Point* nPoint){
-        if (dim == nPoint->dim){
-            for (int i = 0; i < dim; i++){
-                if (co_ord[i] < nPoint->co_ord[i])
-                    return false;
+
+    //?????????
+    bool Clustering::operator>=(const Clustering::Point &one, const Clustering::Point &another) {
+        bool isMore = true;
+        for (int i = 0; i < one.dim; i++) {
+            if (one.values[i] < another.values[i]) {
+                isMore = false;
+                break;
             }
-            return true;
         }
-        return false;
+        return isMore;
     }
-};
+
+    //???????
+    std::ostream &Clustering::operator<<(std::ostream &ostream, const Clustering::Point &out) {
+        ostream << out;
+        return ostream;
+
+    }
+
+    //?????????
+    std::istream &Clustering::operator>>(std::istream &istream, Clustering::Point &inn) {
+        istream >> inn;
+        return istream;
+    }
