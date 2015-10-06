@@ -1,58 +1,113 @@
 //Narayan Ramjali
 
+//
+// Created by Narayan Ramjali on 9/29/15.
+//
 #include "Point.h"
 #include "Cluster.h"
-#include <vector>
-using namespace std;
+namespace Clustering {
+
+    Cluster::Cluster(const Cluster &cluster) {
+
+        *this = cluster;
+    }
+
+    Cluster &Cluster::operator=(const Cluster &cluster) {
+
+        return *this;
+    }
+
+    Cluster::~Cluster() {
+
+    }
+
+    void Cluster::add(PointPtr const &ptr) {
+        LNodePtr newNode = new LNode;
+        newNode->p = ptr;
+        newNode->next = nullptr;
+    }
+
+    PointPtr const &Cluster::remove(PointPtr const &ptr) {
+
+        /*  if (this == &ptr) {
+              return *this;
+          } else {
+              delete[] values;
+
+              dim = ptr.dim;
+              values = new double[dim];
+              for (int i = 0; i < dim; i++)
+                  values[i] = ptr.values[i];
+          }
+          */
+        // return *this;
 
 
-class cluster{
-public:
-    int nop;
-    vector<Clustering::Point*> my_vec;
-    cluster(){
-        nop = 0;
+        // return <#initializer#>;
     }
-    cluster* operator+(Clustering::Point* p){
-        nop++;
-        my_vec.push_back(p);
-        
-        cluster *c = new cluster();
-        c->nop = nop;
-        c->my_vec = my_vec;
-        return c;
+
+    std::ostream &operator<<(std::ostream &ostream, const Cluster &cluster) {
+        // return <#initializer#>;
     }
-    
-    void operator-(Clustering::Point* p){
-        nop--;
-      //  my_vec.pop_back(p);
-        
-        cluster *c = new cluster();
-        c->nop = nop;
-        c->my_vec = my_vec;
-     //   return c;
+
+    std::istream &operator>>(std::istream &istream, Cluster &cluster) {
+        //  return <#initializer#>;
     }
-    
-    bool operator==(cluster* c){
-        if (c->nop == nop){
-            for (int i = 0; i < nop; i++){
-                if (my_vec[i] != c->my_vec[i])
-                    return false;
-            }
-            return true;
-        }
-        return false;
+
+    Cluster &Cluster::operator+=(const Cluster &rhs) {
+        //  return <#initializer#>;
     }
-    
-    bool operator!=(cluster* c){
-        if (c->nop == nop){
-            for (int i = 0; i < nop; i++){
-                if (my_vec[i] == c->my_vec[i])
-                    return false;
-            }
-            return true;
-        }
-        return true;
+
+    Cluster &Cluster::operator+=(const Point &rhs) {
+
+        return *this;
+        // return <#initializer#>;
     }
-};
+
+    Cluster &Cluster::operator-=(const Point &rhs) {
+        //  return <#initializer#>;
+    }
+
+    Cluster &Cluster::operator-=(const Cluster &rhs) {
+        // return <#initializer#>;
+    }
+
+
+    const Cluster operator+(const Cluster &lhs, const Cluster &rhs) {
+        Cluster newCluster = Cluster();
+
+
+        return newCluster;
+        //  return Clustering::Cluster();
+    }
+
+    const Cluster operator-(const Cluster &lhs, const Cluster &rhs) {
+        Cluster newCluster = Cluster();
+
+
+        return newCluster;
+
+        //  return Clustering::Cluster();
+    }
+
+    const Cluster operator+(const Cluster &lhs, PointPtr const &rhs) {
+        Cluster newCluster = Cluster();
+
+
+        return newCluster;
+
+        // return Clustering::Cluster();
+    }
+
+    const Cluster operator-(const Cluster &lhs, PointPtr const &rhs) {
+        Cluster newCluster = Cluster();
+
+
+        return newCluster;
+
+        // return Clustering::Cluster();
+    }
+
+}
+
 
